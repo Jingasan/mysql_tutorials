@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta httpequiv="ContentType" content="text/html;charset=utf8" />
+    <title>記事表示(ID:{{.data.ID}})</title>
+  </head>
+  <body>
+    <p>タイトル： {{.data.Title}}</p>
+    <p>本文：</p>
+    <p>{{.data.Body}}</p>
+
+    <p>
+      <a href="/edit/{{.data.ID}}"><input type="button" value="編集" /></a>
+      <a href="/"><input type="button" value="戻る" /></a>
+    </p>
+  </body>
+</html>
