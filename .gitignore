@@ -1,3 +1,11 @@
 nodejs/api/express/node_modules
 nodejs/db/mysql_data
 nodejs/db/logs
+go/db/mysql_data
+go/db/logs
+go_mvc/mysql_data
+go_mvc/logs
+go_crypto/mysql_data
+go_crypto/logs
+go_session/mysql_data
+go_session/logs
