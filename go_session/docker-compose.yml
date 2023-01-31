@@ -1,0 +1,84 @@
+version: "3.9"
+services:
+  # MySQLコンテナの設定
+  db:
+    container_name: db-container
+    image: test-mysql-server:8.0.31
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+      # プロキシ環境下の場合
+      args:
+        - HTTP_PROXY=$HTTP_PROXY
+        - http_proxy=$http_proxy
+        - HTTPS_PROXY=$HTTPS_PROXY
+        - https_proxy=$https_proxy
+    platform: linux/amd64
+    ports:
+      - "$DB_CONTAINER_PORT:$DB_CONTAINER_PORT"
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      TZ: $TZ
+    volumes:
+      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./db/mysql_data:/var/lib/mysql
+      - ./db/logs:/var/log/mysql
+    tty: true
+    networks:
+      backend:
+        ipv4_address: $DB_CONTAINER_IPV4 # コンテナのIPアドレス
+  # Redisコンテナの設定
+  redis:
+    container_name: redis-container
+    image: test-redis-server:7.0.8
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+      # プロキシ環境下の場合
+      args:
+        - HTTP_PROXY=$HTTP_PROXY
+        - http_proxy=$http_proxy
+        - HTTPS_PROXY=$HTTPS_PROXY
+        - https_proxy=$https_proxy
+    platform: linux/amd64
+    ports:
+      - "$REDIS_CONTAINER_PORT:$REDIS_CONTAINER_PORT"
+    tty: true
+    networks:
+      backend:
+        ipv4_address: $REDIS_CONTAINER_IPV4 # コンテナのIPアドレス
+  # Go + Gin + GORM + go-redisコンテナの設定
+  api:
+    container_name: api-container
+    image: test-gin-server:1.0.0
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      # プロキシ環境下の場合
+      args:
+        - HTTP_PROXY=$HTTP_PROXY
+        - http_proxy=$http_proxy
+        - HTTPS_PROXY=$HTTPS_PROXY
+        - https_proxy=$https_proxy
+    ports:
+      - "3000:3000"
+    working_dir: /gin
+    command: ./main
+    depends_on:
+      - db # MySQLコンテナが起動した後に起動
+      - redis # refisコンテナが起動した後に起動
+    env_file:
+      - .env
+    tty: true
+    networks:
+      backend:
+        ipv4_address: $API_CONTAINER_IPV4 # コンテナのIPアドレス
+# ネットワーク設定
+networks:
+  backend:
+    driver: bridge
+    name: app_network
+    ipam:
+      config:
+        - subnet: $SUBNET
