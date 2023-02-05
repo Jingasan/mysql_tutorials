@@ -3,15 +3,7 @@ services:
   # MySQLコンテナの設定
   db:
     container_name: db-container
-    image: test-mysql-server:8.0.31
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-      args:
-        - HTTP_PROXY=$HTTP_PROXY
-        - http_proxy=$http_proxy
-        - HTTPS_PROXY=$HTTPS_PROXY
-        - https_proxy=$https_proxy
+    image: mysql:8.0.31
     platform: linux/amd64
     ports:
       - "$DB_CONTAINER_PORT:$DB_CONTAINER_PORT"
@@ -47,14 +39,6 @@ services:
       - db # MySQLコンテナが起動した後に起動
     env_file:
       - .env
-    # environment:
-    #   MYSQL_DATABASE: $MYSQL_DATABASE
-    #   MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-    #   TZ: $TZ
-    #   DB_CONTAINER_IPV4: $DB_CONTAINER_IPV4
-    #   DB_CONTAINER_PORT: $DB_CONTAINER_PORT
-    #   API_CONTAINER_IPV4: $API_CONTAINER_IPV4
-    #   API_CONTAINER_PORT: $API_CONTAINER_PORT
     tty: true
     networks:
       backend:

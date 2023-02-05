@@ -1,18 +1,20 @@
 version: "3.9"
 services:
   # MySQLコンテナの設定
-  mysql:
-    container_name: mysql-container
+  db:
+    container_name: db-container
     image: mysql:8.0.31
+    platform: linux/amd64
     ports:
       - "3306:3306"
-    environment:
+    environment: # MySQL設定
       MYSQL_DATABASE: demo_database
       MYSQL_ROOT_PASSWORD: password
       MYSQL_USER: user
       MYSQL_PASSWORD: password
-      TZ: "Asia/Tokyo"
+      TZ: Asia/Tokyo
     volumes:
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db/mysql_data:/var/lib/mysql
       - ./db/logs:/var/log/mysql
+    tty: true
